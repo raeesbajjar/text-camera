@@ -1,7 +1,51 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta charset="UTF-8">
+  <title>📘 Text Camera</title>
+</head>
+
 <body>
-<h2>Text Camera Website</h2>
-<p>Website working</p>
+<h2>📘 Recorded Videos</h2>
+<p>Click download to open or save the video.</p>
+
+<ul id="videoList"></ul>
+
+<script>
+const USERNAME = "raeesbajjar";   // 🔴 change this
+const REPO = "text-camera";
+const FOLDER = "videos";
+
+const apiURL = `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${FOLDER}`;
+
+fetch(apiURL)
+  .then(response => response.json())
+  .then(files => {
+    const list = document.getElementById("videoList");
+
+    if (files.length === 0) {
+      list.innerHTML = "<li>No videos yet</li>";
+      return;
+    }
+
+    files.forEach(file => {
+      if (file.name.endsWith(".mp4")) {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+          ${file.name}
+          <a href="${file.download_url}" target="_blank">⬇ Download</a>
+        `;
+
+        list.appendChild(li);
+      }
+    });
+  })
+  .catch(err => {
+    document.getElementById("videoList").innerHTML =
+      "<li>Error loading videos</li>";
+  });
+</script>
+
 </body>
 </html>
