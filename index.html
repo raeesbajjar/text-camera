@@ -10,12 +10,11 @@
 <p>Click download to open or save the video.</p>
 
 <ul id="videoList"></ul>
-
 <script>
-const USERNAME = "raeesbajjar";
+const USERNAME = "YOUR_GITHUB_USERNAME";   // 🔴 change this
 const REPO = "text-camera";
 const FOLDER = "videos";
-const DELETE_API = "https://text-camera-delete.YOURNAME.workers.dev";
+const DELETE_API = "https://text-camera-delete.YOURNAME.workers.dev"; // 🔴 change this
 
 const apiURL = `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${FOLDER}`;
 
@@ -23,13 +22,19 @@ fetch(apiURL)
   .then(res => res.json())
   .then(files => {
     const list = document.getElementById("videoList");
+    list.innerHTML = "";
+
+    if (!files || files.length === 0) {
+      list.innerHTML = "<li>No videos yet</li>";
+      return;
+    }
 
     files.forEach(file => {
       if (file.name.endsWith(".mp4")) {
         const li = document.createElement("li");
 
         li.innerHTML = `
-          ${file.name}
+          <strong>${file.name}</strong>
           <a href="${file.download_url}" target="_blank">⬇ Download</a>
           <button onclick="deleteVideo('${file.name}')">🗑 Delete</button>
         `;
@@ -37,13 +42,23 @@ fetch(apiURL)
         list.appendChild(li);
       }
     });
+  })
+  .catch(() => {
+    document.getElementById("videoList").innerHTML =
+      "<li>Error loading videos</li>";
   });
 
 function deleteVideo(name) {
-  if (!confirm("Delete " + name + "?")) return;
+  if (!confirm("Are you sure you want to delete " + name + "?")) {
+    return;
+  }
 
   fetch(`${DELETE_API}?file=${name}`)
-    .then(() => location.reload());
+    .then(() => {
+      alert("Deleted successfully");
+      location.reload();
+    })
+    .catch(() => alert("Delete failed"));
 }
 </script>
 
